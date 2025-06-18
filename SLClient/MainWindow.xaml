@@ -1,0 +1,84 @@
+﻿<Window x:Class="SLClient.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="SlClient" 
+        Height="500" Width="700" 
+        ResizeMode="CanResize"
+        WindowStartupLocation="CenterScreen"
+        Background="#FFBFBFBF">
+
+    <DockPanel Margin="10">
+        <!-- Menüleiste -->
+        <Menu DockPanel.Dock="Top" Background="#FFBFBFBF">
+            <MenuItem Header="_Datei">
+                <MenuItem Header="_Verbinden" Click="Connect_Click" />
+                <MenuItem Header="_Trennen" Click="Disconnect_Click" />
+                <Separator/>
+                <MenuItem Header="E_xit" Click="Exit_Click" />
+            </MenuItem>
+
+            <MenuItem Header="Karte">
+                <MenuItem Header="Karte öffnen" Click="MapOpen_Click"/>
+            </MenuItem>
+
+            <MenuItem Header="_Hilfe">
+                <MenuItem Header="_Über..." Click="About_Click" />
+            </MenuItem>
+        </Menu>
+
+        <!-- Hauptbereich -->
+        <Grid Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Verbindungsfelder -->
+            <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
+                <TextBox x:Name="HostBox" Width="200" Text="mud.silberland.at" Margin="0,0,10,0"/>
+                <TextBox x:Name="PortBox" Width="60" Text="4711" Margin="0,0,10,0"/>
+                <Button Content="Verbinden" Click="Connect_Click" Margin="10,0,0,0"/>
+            </StackPanel>
+
+            <!-- Ausgabefeld -->
+            <TextBox x:Name="OutputBox" Grid.Row="1" 
+                     IsReadOnly="True" 
+                     VerticalScrollBarVisibility="Auto" 
+                     TextWrapping="Wrap" 
+                     AcceptsReturn="True" 
+                     TextChanged="OutputBox_TextChanged"
+                     Background="#FF060606" 
+                     Foreground="#FFE4E4E4" 
+                     FontFamily="Consolas" 
+                     FontSize="14" />
+
+            <!-- Eingabefeld + Senden -->
+            <Grid Grid.Row="2" Margin="0,10,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBox x:Name="InputBox"
+                         Grid.Column="0"
+                         VerticalAlignment="Stretch"
+                         HorizontalAlignment="Stretch"
+                         TextWrapping="Wrap"
+                         Background="Black"
+                         Foreground="#FFDEDCDC" 
+                         FontFamily="Consolas" 
+                         FontSize="14"
+                         AcceptsReturn="False"
+                         KeyDown="InputBox_KeyDown" />
+
+                <Button Content="Send"
+                        Grid.Column="1"
+                        Click="Send_Click"
+                        Margin="10,0,0,0"
+                        Padding="10,5"
+                        IsDefault="True"/>
+            </Grid>
+        </Grid>
+    </DockPanel>
+</Window>
