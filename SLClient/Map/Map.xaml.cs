@@ -604,8 +604,15 @@ public partial class Map : Window
         if (SavedMapsComboBox.SelectedItem is not string selectedMap)
             return;
 
-        if (selectedMap == lastSelectedMapName || selectedMap == UnsavedMapLabel)
+        if (selectedMap == lastSelectedMapName)
             return;
+
+        if (selectedMap == UnsavedMapLabel)
+        {
+            // Verhalten wie Klick auf "Neu"-Button
+            NewMapButton_Click(sender, new RoutedEventArgs());
+            return;
+        }
 
         if (isDirty)
         {
