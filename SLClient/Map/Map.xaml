@@ -24,6 +24,17 @@
                     Panel.ZIndex="10"
                     >
             <Button Width="30" Height="30"
+        Click="NewMapButton_Click"
+        ToolTip="Neue Karte"
+        Margin="0,0,10,0">
+                <fa:PackIconFontAwesome Kind="FileSolid"
+                            Width="16"
+                            Height="16"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center"
+                            Foreground="Black"/>
+            </Button>
+            <Button Width="30" Height="30"
                     Click="SaveMapButton_Click"
                     ToolTip="Speichern"
                     Margin="0,0,10,0">
