@@ -68,7 +68,7 @@
 
                 <!-- Zweite Zeile: Oben-Pfeil mittig -->
                 <Button Width="30" Height="30"
-                        Click="MoveUp_Click"
+                        Click="ScrollUp_Click"
                         ToolTip="Nach oben"
                         Margin="0,10,0,0"
                         HorizontalAlignment="Center">
@@ -90,7 +90,7 @@
         <Button Width="30" Height="30"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
-                Click="MoveLeft_Click"
+                Click="ScrollLeft_Click"
                 ToolTip="Nach links"
                 Margin="10"
                 Panel.ZIndex="20">
@@ -103,7 +103,7 @@
         <Button Width="30" Height="30"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Center"
-                Click="MoveRight_Click"
+                Click="ScrollRight_Click"
                 ToolTip="Nach rechts"
                 Margin="10"
                 Panel.ZIndex="20">
@@ -116,7 +116,7 @@
         <Button Width="30" Height="30"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Bottom"
-                Click="MoveDown_Click"
+                Click="ScrollDown_Click"
                 ToolTip="Nach unten"
                 Margin="10"
                 Panel.ZIndex="20">
@@ -133,7 +133,7 @@
                     Panel.ZIndex="20">
             <!-- Z+ -->
             <Button Width="30" Height="30"
-                    Click="MoveZUp_Click"
+                    Click="ScrollZUp_Click"
                     ToolTip="Z erhöhen">
                 <fa:PackIconFontAwesome Kind="PlusSolid"
                                         Width="16" Height="16"
@@ -141,7 +141,7 @@
             </Button>
             <!-- Z- -->
             <Button Width="30" Height="30"
-                    Click="MoveZDown_Click"
+                    Click="ScrollZDown_Click"
                     ToolTip="Z verringern"
                     Margin="0,5,0,0">
                 <fa:PackIconFontAwesome Kind="MinusSolid"

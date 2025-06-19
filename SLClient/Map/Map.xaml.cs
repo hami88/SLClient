@@ -14,18 +14,24 @@ public partial class Map : Window
     private const string UnsavedMapLabel = "<ungespeicherte Karte>";
     private const int CellSize = 10;
     private const int CellSpacing = 10;
-    private int totalCellSize => CellSize + CellSpacing;
+    private int TotalCellSize
+    {
+        get
+        {
+            return CellSize + CellSpacing;
+        }
+    }
 
-    private int currentGridWidth;
-    private int currentGridHeight;
+    private int CurrentGridWidth { get; set; }
+    private int CurrentGridHeight { get; set; }
 
-    private int posX;
-    private int posY;
-    private int posZ = 0;
+    public int PosX { get; set; }
+    public int PosY { get; set; }
+    public int PosZ { get; set; } = 0;
 
-    private int offsetX = 0;
-    private int offsetY = 0;
-    private int offsetZ = 0;
+    public int OffsetX { get; set; } = 0;
+    public int OffsetY { get; set; } = 0;
+    public int OffsetZ { get; set; } = 0;
 
     private bool isReadOnly = false;
     private bool isDirty = false;
@@ -36,7 +42,7 @@ public partial class Map : Window
         "SLClient",
         "Maps");
 
-    private Rectangle? currentPosRect;
+    private Rectangle? CurrentPosRect { get; set; }
 
     private readonly HashSet<(int x, int y, int z)> visitedCells = [];
     private readonly List<(int x1, int y1, int z1, int x2, int y2, int z2)> lines = [];
@@ -63,9 +69,9 @@ public partial class Map : Window
     {
         UpdateGridSize();
 
-        posX = currentGridWidth / 2;
-        posY = currentGridHeight / 2;
-        posZ = 0;
+        PosX = CurrentGridWidth / 2;
+        PosY = CurrentGridHeight / 2;
+        PosZ = 0;
 
         RedrawMap();
     }
@@ -81,32 +87,32 @@ public partial class Map : Window
         double availableWidth = MapCanvas.ActualWidth;
         double availableHeight = MapCanvas.ActualHeight;
 
-        currentGridWidth = (int)(availableWidth / totalCellSize);
-        currentGridHeight = (int)(availableHeight / totalCellSize);
+        CurrentGridWidth = (int)(availableWidth / TotalCellSize);
+        CurrentGridHeight = (int)(availableHeight / TotalCellSize);
 
-        MapCanvas.Width = currentGridWidth * totalCellSize;
-        MapCanvas.Height = currentGridHeight * totalCellSize;
+        MapCanvas.Width = CurrentGridWidth * TotalCellSize;
+        MapCanvas.Height = CurrentGridHeight * TotalCellSize;
 
-        if (posX >= currentGridWidth) posX = currentGridWidth - 1;
-        if (posY >= currentGridHeight) posY = currentGridHeight - 1;
+        if (PosX >= CurrentGridWidth) PosX = CurrentGridWidth - 1;
+        if (PosY >= CurrentGridHeight) PosY = CurrentGridHeight - 1;
     }
 
-    private void RedrawMap()
+    public void RedrawMap()
     {
         MapCanvas.Children.Clear();
 
         foreach (var (fx, fy, fz, tx, ty, tz) in lines)
         {
-            if ((fz == posZ || tz == posZ) && (IsCellVisible(fx, fy) || IsCellVisible(tx, ty)))
+            if ((fz == PosZ || tz == PosZ) && (IsCellVisible(fx, fy) || IsCellVisible(tx, ty)))
             {
-                if (fz == posZ && tz == posZ)
+                if (fz == PosZ && tz == PosZ)
                     DrawConnectionLine(fx, fy, tx, ty);
             }
         }
 
         foreach (var (x, y, z) in visitedCells)
         {
-            if (z == posZ && IsCellVisible(x, y))
+            if (z == PosZ && IsCellVisible(x, y))
                 MarkVisited(x, y);
         }
 
@@ -115,16 +121,16 @@ public partial class Map : Window
 
     private bool IsCellVisible(int x, int y)
     {
-        return x >= offsetX && x < offsetX + currentGridWidth &&
-               y >= offsetY && y < offsetY + currentGridHeight;
+        return x >= OffsetX && x < OffsetX + CurrentGridWidth &&
+               y >= OffsetY && y < OffsetY + CurrentGridHeight;
     }
 
     private void DrawCurrentPosition()
     {
-        if (currentPosRect != null)
-            MapCanvas.Children.Remove(currentPosRect);
+        if (CurrentPosRect != null)
+            MapCanvas.Children.Remove(CurrentPosRect);
 
-        currentPosRect = new Rectangle
+        CurrentPosRect = new Rectangle
         {
             Width = CellSize,
             Height = CellSize,
@@ -133,15 +139,15 @@ public partial class Map : Window
             StrokeThickness = 1
         };
 
-        Canvas.SetLeft(currentPosRect, posX * totalCellSize);
-        Canvas.SetTop(currentPosRect, posY * totalCellSize);
-        MapCanvas.Children.Add(currentPosRect);
+        Canvas.SetLeft(CurrentPosRect, PosX * TotalCellSize);
+        Canvas.SetTop(CurrentPosRect, PosY * TotalCellSize);
+        MapCanvas.Children.Add(CurrentPosRect);
     }
 
     private void MarkVisited(int x, int y)
     {
-        double left = (x - offsetX) * totalCellSize;
-        double top = (y - offsetY) * totalCellSize;
+        double left = (x - OffsetX) * TotalCellSize;
+        double top = (y - OffsetY) * TotalCellSize;
 
         var rect = new Rectangle
         {
@@ -155,7 +161,7 @@ public partial class Map : Window
         Canvas.SetTop(rect, top);
         MapCanvas.Children.Add(rect);
 
-        var (hasUp, hasDown) = GetZConnections(x, y, posZ);
+        var (hasUp, hasDown) = GetZConnections(x, y, PosZ);
 
         if (hasUp)
         {
@@ -218,10 +224,10 @@ public partial class Map : Window
 
     private void DrawConnectionLine(int fromX, int fromY, int toX, int toY)
     {
-        double startX = (fromX - offsetX) * totalCellSize + CellSize / 2.0;
-        double startY = (fromY - offsetY) * totalCellSize + CellSize / 2.0;
-        double endX = (toX - offsetX) * totalCellSize + CellSize / 2.0;
-        double endY = (toY - offsetY) * totalCellSize + CellSize / 2.0;
+        double startX = (fromX - OffsetX) * TotalCellSize + CellSize / 2.0;
+        double startY = (fromY - OffsetY) * TotalCellSize + CellSize / 2.0;
+        double endX = (toX - OffsetX) * TotalCellSize + CellSize / 2.0;
+        double endY = (toY - OffsetY) * TotalCellSize + CellSize / 2.0;
 
         var line = new Line
         {
@@ -238,12 +244,12 @@ public partial class Map : Window
 
     public void Move(string direction)
     {
-        if (!TryParseDirection(direction, out int dx, out int dy, out int dz))
+        if (!DirectionParser.TryParseDirection(direction, out int dx, out int dy, out int dz))
             return;
 
-        int globalOldX = offsetX + posX;
-        int globalOldY = offsetY + posY;
-        int globalOldZ = offsetZ + posZ;
+        int globalOldX = OffsetX + PosX;
+        int globalOldY = OffsetY + PosY;
+        int globalOldZ = OffsetZ + PosZ;
 
         int globalNewX = globalOldX + dx;
         int globalNewY = globalOldY + dy;
@@ -262,13 +268,13 @@ public partial class Map : Window
                 return;
         }
 
-        posZ = globalNewZ;
+        PosZ = globalNewZ;
 
-        offsetX = globalNewX - currentGridWidth / 2;
-        offsetY = globalNewY - currentGridHeight / 2;
+        OffsetX = globalNewX - CurrentGridWidth / 2;
+        OffsetY = globalNewY - CurrentGridHeight / 2;
 
-        posX = currentGridWidth / 2;
-        posY = currentGridHeight / 2;
+        PosX = CurrentGridWidth / 2;
+        PosY = CurrentGridHeight / 2;
 
         bool wasNew = visitedCells.Add((globalOldX, globalOldY, globalOldZ));
         wasNew |= visitedCells.Add((globalNewX, globalNewY, globalNewZ));
@@ -305,115 +311,6 @@ public partial class Map : Window
     private void ReadOnlyCheckBox_Unchecked(object sender, RoutedEventArgs e)
     {
         isReadOnly = false;
-    }
-
-    private static bool TryParseDirection(string input, out int dx, out int dy, out int dz)
-    {
-        dx = dy = dz = 0;
-        string dir = input.ToLowerInvariant();
-
-        // Volle 3D-Diagonalrichtungen
-        var map3D = new Dictionary<string, (int dx, int dy, int dz)>
-        {
-            // Nordost
-            ["noob"] = (1, -1, 1),
-            ["neu"] = (1, -1, 1),
-            ["nordostoben"] = (1, -1, 1),
-            ["northeastup"] = (1, -1, 1),
-            ["nou"] = (1, -1, -1),
-            ["ned"] = (1, -1, -1),
-            ["nordostunten"] = (1, -1, -1),
-            ["northeastdown"] = (1, -1, -1),
-
-            // Nordwest
-            ["nwup"] = (-1, -1, 1),
-            ["nwob"] = (-1, -1, 1),
-            ["nordwestoben"] = (-1, -1, 1),
-            ["northwestup"] = (-1, -1, 1),
-            ["nwdown"] = (-1, -1, -1),
-            ["nordwestunten"] = (-1, -1, -1),
-            ["northwestdown"] = (-1, -1, -1),
-
-            // Südost
-            ["soob"] = (1, 1, 1),
-            ["seup"] = (1, 1, 1),
-            ["südostoben"] = (1, 1, 1),
-            ["southeastup"] = (1, 1, 1),
-            ["sou"] = (1, 1, -1),
-            ["sedown"] = (1, 1, -1),
-            ["südostunten"] = (1, 1, -1),
-            ["southeastdown"] = (1, 1, -1),
-
-            // Südwest
-            ["swob"] = (-1, 1, 1),
-            ["swup"] = (-1, 1, 1),
-            ["südwestoben"] = (-1, 1, 1),
-            ["southwestup"] = (-1, 1, 1),
-            ["swu"] = (-1, 1, -1),
-            ["swdown"] = (-1, 1, -1),
-            ["südwestunten"] = (-1, 1, -1),
-            ["southwestdown"] = (-1, 1, -1),
-        };
-
-        if (map3D.TryGetValue(dir, out var delta3D))
-        {
-            dx = delta3D.dx;
-            dy = delta3D.dy;
-            dz = delta3D.dz;
-            return true;
-        }
-
-        // 2D-Richtungen (inkl. Kurzformen)
-        var map2D = new Dictionary<string, (int dx, int dy)>
-        {
-            ["n"] = (0, -1),
-            ["north"] = (0, -1),
-            ["norden"] = (0, -1),
-            ["s"] = (0, 1),
-            ["south"] = (0, 1),
-            ["süden"] = (0, 1),
-            ["sued"] = (0, 1),
-            ["sueden"] = (0, 1),
-            ["e"] = (1, 0),
-            ["east"] = (1, 0),
-            ["osten"] = (1, 0),
-            ["o"] = (1, 0),
-            ["w"] = (-1, 0),
-            ["west"] = (-1, 0),
-            ["westen"] = (-1, 0),
-
-            ["ne"] = (1, -1),
-            ["no"] = (1, -1),
-            ["nordost"] = (1, -1),
-            ["nordosten"] = (1, -1),
-            ["northeast"] = (1, -1),
-            ["nw"] = (-1, -1),
-            ["nordwest"] = (-1, -1),
-            ["nordwesten"] = (-1, -1),
-            ["northwest"] = (-1, -1),
-            ["se"] = (1, 1),
-            ["so"] = (1, 1),
-            ["südost"] = (1, 1),
-            ["südosten"] = (1, 1),
-            ["southeast"] = (1, 1),
-            ["sw"] = (-1, 1),
-            ["südwest"] = (-1, 1),
-            ["südwesten"] = (-1, 1),
-            ["southwest"] = (-1, 1)
-        };
-
-        if (map2D.TryGetValue(dir, out var delta2D))
-        {
-            dx = delta2D.dx;
-            dy = delta2D.dy;
-            return true;
-        }
-
-        // Z-Richtungen
-        if (dir == "up" || dir == "ob" || dir == "oben") { dz = 1; return true; }
-        if (dir == "down" || dir == "u" || dir == "unten") { dz = -1; return true; }
-
-        return false;
     }
 
     #region Save
@@ -465,7 +362,7 @@ public partial class Map : Window
     {
         var mapSaveData = new MapSaveData
         {
-            CurrentPosition = new PositionData { X = posX + offsetX, Y = posY + offsetY, Z = posZ },
+            CurrentPosition = new PositionData { X = PosX + OffsetX, Y = PosY + OffsetY, Z = PosZ },
             VisitedCells = [],
             Lines = []
         };
@@ -531,13 +428,13 @@ public partial class Map : Window
         foreach (var line in mapSaveData.Lines)
             lines.Add((line.X1, line.Y1, line.Z1, line.X2, line.Y2, line.Z2));
 
-        posZ = mapSaveData.CurrentPosition.Z;
+        PosZ = mapSaveData.CurrentPosition.Z;
 
-        offsetX = mapSaveData.CurrentPosition.X - currentGridWidth / 2;
-        offsetY = mapSaveData.CurrentPosition.Y - currentGridHeight / 2;
+        OffsetX = mapSaveData.CurrentPosition.X - CurrentGridWidth / 2;
+        OffsetY = mapSaveData.CurrentPosition.Y - CurrentGridHeight / 2;
 
-        posX = currentGridWidth / 2;
-        posY = currentGridHeight / 2;
+        PosX = CurrentGridWidth / 2;
+        PosY = CurrentGridHeight / 2;
 
         RedrawMap();
         UpdateWindowTitle();
@@ -571,12 +468,12 @@ public partial class Map : Window
         lastSelectedMapName = null;
 
         // Zurück zur Ausgangsposition
-        posX = currentGridWidth / 2;
-        posY = currentGridHeight / 2;
-        posZ = 0;
-        offsetX = 0;
-        offsetY = 0;
-        offsetZ = 0;
+        PosX = CurrentGridWidth / 2;
+        PosY = CurrentGridHeight / 2;
+        PosZ = 0;
+        OffsetX = 0;
+        OffsetY = 0;
+        OffsetZ = 0;
 
         // Kombobox zurücksetzen
         SavedMapsComboBox.SelectionChanged -= SavedMapsComboBox_SelectionChanged;
@@ -665,40 +562,40 @@ public partial class Map : Window
 
     #region MapViewNavigation
 
-    private void MoveLeft_Click(object sender, RoutedEventArgs e)
+    private void ScrollLeft_Click(object sender, RoutedEventArgs e)
     {
-        offsetX -= 1;
+        OffsetX -= 1;
         RedrawMap();
     }
 
-    private void MoveRight_Click(object sender, RoutedEventArgs e)
+    private void ScrollRight_Click(object sender, RoutedEventArgs e)
     {
-        offsetX += 1;
+        OffsetX += 1;
         RedrawMap();
     }
 
-    private void MoveUp_Click(object sender, RoutedEventArgs e)
+    private void ScrollUp_Click(object sender, RoutedEventArgs e)
     {
-        offsetY -= 1;
+        OffsetY -= 1;
         RedrawMap();
     }
 
-    private void MoveDown_Click(object sender, RoutedEventArgs e)
+    private void ScrollDown_Click(object sender, RoutedEventArgs e)
     {
-        offsetY += 1;
+        OffsetY += 1;
         RedrawMap();
     }
 
-    private void MoveZUp_Click(object sender, RoutedEventArgs e)
+    private void ScrollZUp_Click(object sender, RoutedEventArgs e)
     {
-        posZ += 1;
+        PosZ += 1;
         RedrawMap();
         UpdateWindowTitle();
     }
 
-    private void MoveZDown_Click(object sender, RoutedEventArgs e)
+    private void ScrollZDown_Click(object sender, RoutedEventArgs e)
     {
-        posZ -= 1;
+        PosZ -= 1;
         RedrawMap();
         UpdateWindowTitle();
     }
@@ -706,11 +603,11 @@ public partial class Map : Window
     /// <summary>
     /// Zeigt den aktuellen Z-Wert im Fenster-Titel an.
     /// </summary>
-    private void UpdateWindowTitle()
+    public void UpdateWindowTitle()
     {
         string mapName = string.IsNullOrWhiteSpace(lastSelectedMapName) ? "Unbekannte Karte" : System.IO.Path.GetFileNameWithoutExtension(lastSelectedMapName);
 
-        this.Title = $"Karte: {mapName} – Z: {posZ}";
+        Title = $"Karte: {mapName} – Z: {PosZ}";
     }
 
     #endregion
