@@ -80,10 +80,11 @@
                 </Button>
             </StackPanel>
 
-            <!-- Canvas mit Karte (jetzt unterhalb des Buttons) -->
+            <!-- Canvas mit Karte -->
             <Canvas x:Name="MapCanvas"
                     Background="White"
-                    Grid.Row="1"/>
+                    Grid.Row="1"
+                    MouseLeftButtonDown="MapCanvas_MouseLeftButtonDown"/>
         </Grid>
 
         <!-- Bewegung: Links -->

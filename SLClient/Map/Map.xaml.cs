@@ -4,6 +4,7 @@ using System.IO;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
@@ -24,6 +25,9 @@ public partial class Map : Window
 
     private int CurrentGridWidth { get; set; }
     private int CurrentGridHeight { get; set; }
+
+    private DateTime LastClickTime { get; set; }
+    private const int DoubleClickTime = 300;
 
     public int PosX { get; set; }
     public int PosY { get; set; }
@@ -611,4 +615,37 @@ public partial class Map : Window
     }
 
     #endregion
+
+    private void MapCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        var now = DateTime.Now;
+        var diff = (now - LastClickTime).TotalMilliseconds;
+
+        if (diff < DoubleClickTime)
+        {
+            Point clickPos = e.GetPosition(MapCanvas);
+
+            // Lokale Koordinaten im sichtbaren Canvas-Bereich
+            int localX = (int)(clickPos.X / TotalCellSize);
+            int localY = (int)(clickPos.Y / TotalCellSize);
+
+            // Globale Koordinaten berechnen (für VisitedCells etc.)
+            int globalX = localX + OffsetX;
+            int globalY = localY + OffsetY;
+
+            // Spieler-Position relativ zum neuen Offset setzen
+            PosX = CurrentGridWidth / 2;
+            PosY = CurrentGridHeight / 2;
+
+            // Neues Offset zentriert den Spieler auf die neue globale Koordinate
+            OffsetX = globalX - PosX;
+            OffsetY = globalY - PosY;
+
+            // Karte neu zeichnen
+            RedrawMap();
+            UpdateWindowTitle();
+        }
+
+        LastClickTime = now;
+    }
 }
