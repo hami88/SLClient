@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using Path = System.IO.Path;
 
 namespace SLClient.Map;
 
@@ -325,23 +326,34 @@ public partial class Map : Window
             if (!Directory.Exists(mapFolder))
                 Directory.CreateDirectory(mapFolder);
 
-            var dlg = new SaveFileDialog
+            if (lastSelectedMapName != null)
             {
-                InitialDirectory = mapFolder,
-                Filter = "SLClient Map-Dateien (*.slmap)|*.slmap",
-                DefaultExt = ".slmap",
-                AddExtension = true,
-                Title = "Karte speichern unter"
-            };
-
-            if (dlg.ShowDialog() == true)
-            {
-                string filePath = dlg.FileName;
-
+                string filePath = Path.Combine(mapFolder, lastSelectedMapName);
+                filePath = Path.ChangeExtension(filePath, "slmap");
                 SaveMapToFile(filePath);
 
-                string fileNameWithoutExtension = System.IO.Path.GetFileNameWithoutExtension(filePath);
-                MessageBox.Show($"Karte erfolgreich gespeichert: {fileNameWithoutExtension}", "Erfolg", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show($"Karte erfolgreich gespeichert: {lastSelectedMapName}", "Erfolg", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                var dlg = new SaveFileDialog
+                {
+                    InitialDirectory = mapFolder,
+                    Filter = "SLClient Map-Dateien (*.slmap)|*.slmap",
+                    DefaultExt = ".slmap",
+                    AddExtension = true,
+                    Title = "Karte speichern unter"
+                };
+
+                if (dlg.ShowDialog() == true)
+                {
+                    string filePath = dlg.FileName;
+
+                    SaveMapToFile(filePath);
+
+                    string fileNameWithoutExtension = System.IO.Path.GetFileNameWithoutExtension(filePath);
+                    MessageBox.Show($"Karte erfolgreich gespeichert: {fileNameWithoutExtension}", "Erfolg", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
             }
         }
         catch (Exception ex)
@@ -493,7 +505,7 @@ public partial class Map : Window
             Directory.CreateDirectory(mapFolder);
 
         var files = Directory.GetFiles(mapFolder, "*.slmap");
-        var fileNames = files.Select(f => System.IO.Path.GetFileName(f)).ToList();
+        var fileNames = files.Select(f => System.IO.Path.GetFileNameWithoutExtension(f)).ToList();
 
         var items = new List<string> { UnsavedMapLabel };
         items.AddRange(fileNames);
@@ -549,7 +561,8 @@ public partial class Map : Window
 
         if (selectedMap != UnsavedMapLabel)
         {
-            string filePath = System.IO.Path.Combine(mapFolder, selectedMap);
+            var filePath = Path.Combine(mapFolder, selectedMap);
+            filePath = Path.ChangeExtension(filePath, "slmap");
             if (File.Exists(filePath))
             {
                 LoadMapFromFile(filePath);
