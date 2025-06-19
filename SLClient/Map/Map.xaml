@@ -13,55 +13,141 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <!-- Karte Canvas -->
-        <Canvas x:Name="MapCanvas" Background="White" Margin="10" Grid.Row="0"/>
+        <!-- Oberer Bereich enthält Buttons + Karte, logisch getrennt -->
+        <Grid Grid.Row="0" Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-        <!-- Container für Buttons und ComboBox oben links -->
-        <StackPanel Orientation="Horizontal" Grid.Row="0"
+            <!-- Oberer Buttonbereich -->
+            <StackPanel Orientation="Vertical"
+                        Grid.Row="0"
+                        VerticalAlignment="Top"
+                        HorizontalAlignment="Center"
+                        Panel.ZIndex="10"
+                        Width="600">
+
+                <!-- Erste Zeile: Buttons + ComboBox -->
+                <StackPanel Orientation="Horizontal">
+                    <Button Width="30" Height="30"
+                            Click="NewMapButton_Click"
+                            ToolTip="Neue Karte"
+                            Margin="0,0,10,0">
+                        <fa:PackIconFontAwesome Kind="FileSolid"
+                                                Width="16" Height="16"
+                                                VerticalAlignment="Center"
+                                                HorizontalAlignment="Center"
+                                                Foreground="Black"/>
+                    </Button>
+                    <Button Width="30" Height="30"
+                            Click="SaveMapButton_Click"
+                            ToolTip="Speichern"
+                            Margin="0,0,10,0">
+                        <fa:PackIconFontAwesome Kind="FloppyDiskSolid"
+                                                Width="16" Height="16"
+                                                VerticalAlignment="Center"
+                                                HorizontalAlignment="Center"
+                                                Foreground="Black"/>
+                    </Button>
+                    <Button Width="30" Height="30"
+                            Click="LoadMapButton_Click"
+                            ToolTip="Laden"
+                            Margin="0,0,10,0">
+                        <fa:PackIconFontAwesome Kind="FolderOpenRegular"
+                                                Width="16" Height="16"
+                                                VerticalAlignment="Center"
+                                                HorizontalAlignment="Center"
+                                                Foreground="Black"/>
+                    </Button>
+                    <ComboBox x:Name="SavedMapsComboBox"
+                              Width="150"
+                              VerticalAlignment="Center"
+                              SelectionChanged="SavedMapsComboBox_SelectionChanged"/>
+                </StackPanel>
+
+                <!-- Zweite Zeile: Oben-Pfeil mittig -->
+                <Button Width="30" Height="30"
+                        Click="MoveUp_Click"
+                        ToolTip="Nach oben"
+                        Margin="0,10,0,0"
+                        HorizontalAlignment="Center">
+                    <fa:PackIconFontAwesome Kind="ArrowUpSolid"
+                                            Width="16" Height="16"
+                                            VerticalAlignment="Center"
+                                            HorizontalAlignment="Center"
+                                            Foreground="Black"/>
+                </Button>
+            </StackPanel>
+
+            <!-- Canvas mit Karte (jetzt unterhalb des Buttons) -->
+            <Canvas x:Name="MapCanvas"
+                    Background="White"
+                    Grid.Row="1"/>
+        </Grid>
+
+        <!-- Bewegung: Links -->
+        <Button Width="30" Height="30"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Click="MoveLeft_Click"
+                ToolTip="Nach links"
+                Margin="10"
+                Panel.ZIndex="20">
+            <fa:PackIconFontAwesome Kind="ArrowLeftSolid"
+                                    Width="16" Height="16"
+                                    Foreground="Black"/>
+        </Button>
+
+        <!-- Bewegung: Rechts -->
+        <Button Width="30" Height="30"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                Click="MoveRight_Click"
+                ToolTip="Nach rechts"
+                Margin="10"
+                Panel.ZIndex="20">
+            <fa:PackIconFontAwesome Kind="ArrowRightSolid"
+                                    Width="16" Height="16"
+                                    Foreground="Black"/>
+        </Button>
+
+        <!-- Bewegung: Unten -->
+        <Button Width="30" Height="30"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Bottom"
+                Click="MoveDown_Click"
+                ToolTip="Nach unten"
+                Margin="10"
+                Panel.ZIndex="20">
+            <fa:PackIconFontAwesome Kind="ArrowDownSolid"
+                                    Width="16" Height="16"
+                                    Foreground="Black"/>
+        </Button>
+
+        <!-- Z-Achse Bewegung: + und - rechts oben -->
+        <StackPanel Orientation="Vertical"
+                    HorizontalAlignment="Right"
                     VerticalAlignment="Top"
-                    HorizontalAlignment="Left"
                     Margin="10"
-                    Panel.ZIndex="10"
-                    >
+                    Panel.ZIndex="20">
+            <!-- Z+ -->
             <Button Width="30" Height="30"
-        Click="NewMapButton_Click"
-        ToolTip="Neue Karte"
-        Margin="0,0,10,0">
-                <fa:PackIconFontAwesome Kind="FileSolid"
-                            Width="16"
-                            Height="16"
-                            VerticalAlignment="Center"
-                            HorizontalAlignment="Center"
-                            Foreground="Black"/>
+                    Click="MoveZUp_Click"
+                    ToolTip="Z erhöhen">
+                <fa:PackIconFontAwesome Kind="PlusSolid"
+                                        Width="16" Height="16"
+                                        Foreground="Black"/>
             </Button>
+            <!-- Z- -->
             <Button Width="30" Height="30"
-                    Click="SaveMapButton_Click"
-                    ToolTip="Speichern"
-                    Margin="0,0,10,0">
-                <fa:PackIconFontAwesome Kind="FloppyDiskSolid"
-                                Width="16"
-                                Height="16"
-                                VerticalAlignment="Center"
-                                HorizontalAlignment="Center"
-                                Foreground="Black"/>
+                    Click="MoveZDown_Click"
+                    ToolTip="Z verringern"
+                    Margin="0,5,0,0">
+                <fa:PackIconFontAwesome Kind="MinusSolid"
+                                        Width="16" Height="16"
+                                        Foreground="Black"/>
             </Button>
-
-            <Button Width="30" Height="30"
-                    Click="LoadMapButton_Click"
-                    ToolTip="Laden"
-                    Margin="0,0,10,0">
-                <fa:PackIconFontAwesome Kind="FolderOpenRegular"
-                                Width="16"
-                                Height="16"
-                                VerticalAlignment="Center"
-                                HorizontalAlignment="Center"
-                                Foreground="Black"/>
-            </Button>
-
-            <ComboBox x:Name="SavedMapsComboBox"
-                  Width="150"
-                  VerticalAlignment="Center"
-                  SelectionChanged="SavedMapsComboBox_SelectionChanged"/>
         </StackPanel>
 
         <!-- Legende und CheckBox unten -->
@@ -83,7 +169,6 @@
                     <TextBlock VerticalAlignment="Center">Weg</TextBlock>
                 </StackPanel>
 
-                <!-- Oben: grünes links-oben-Dreieck -->
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,10,0">
                     <Canvas Width="16" Height="16" Margin="0,0,5,0">
                         <Polygon Points="0,0 16,0 0,16" Fill="LimeGreen"/>
@@ -91,7 +176,6 @@
                     <TextBlock VerticalAlignment="Center">Oben</TextBlock>
                 </StackPanel>
 
-                <!-- Unten: blaues rechts-unten-Dreieck -->
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,10,0">
                     <Canvas Width="16" Height="16" Margin="0,0,5,0">
                         <Polygon Points="16,16 0,16 16,0" Fill="DodgerBlue"/>
@@ -99,7 +183,6 @@
                     <TextBlock VerticalAlignment="Center">Unten</TextBlock>
                 </StackPanel>
 
-                <!-- Oben & Unten: beide Dreiecke -->
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,10,0">
                     <Canvas Width="16" Height="16" Margin="0,0,5,0">
                         <Polygon Points="0,0 16,0 0,16" Fill="Green"/>

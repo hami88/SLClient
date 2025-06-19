@@ -458,6 +458,7 @@ public partial class Map : Window
         isDirty = false;
         lastSelectedMapName = System.IO.Path.GetFileName(filePath);
         LoadSavedMaps(true);
+        UpdateWindowTitle();
     }
 
     private string SerializeMap()
@@ -539,6 +540,7 @@ public partial class Map : Window
         posY = currentGridHeight / 2;
 
         RedrawMap();
+        UpdateWindowTitle();
     }
 
     private void NewMapButton_Click(object sender, RoutedEventArgs e)
@@ -559,6 +561,7 @@ public partial class Map : Window
             {
                 return; // Abbrechen
             }
+            UpdateWindowTitle();
         }
 
         // Leeren der Daten
@@ -658,5 +661,57 @@ public partial class Map : Window
 
         lastSelectedMapName = selectedMap;
     }
+    #endregion
+
+    #region MapViewNavigation
+
+    private void MoveLeft_Click(object sender, RoutedEventArgs e)
+    {
+        offsetX -= 1;
+        RedrawMap();
+    }
+
+    private void MoveRight_Click(object sender, RoutedEventArgs e)
+    {
+        offsetX += 1;
+        RedrawMap();
+    }
+
+    private void MoveUp_Click(object sender, RoutedEventArgs e)
+    {
+        offsetY -= 1;
+        RedrawMap();
+    }
+
+    private void MoveDown_Click(object sender, RoutedEventArgs e)
+    {
+        offsetY += 1;
+        RedrawMap();
+    }
+
+    private void MoveZUp_Click(object sender, RoutedEventArgs e)
+    {
+        posZ += 1;
+        RedrawMap();
+        UpdateWindowTitle();
+    }
+
+    private void MoveZDown_Click(object sender, RoutedEventArgs e)
+    {
+        posZ -= 1;
+        RedrawMap();
+        UpdateWindowTitle();
+    }
+
+    /// <summary>
+    /// Zeigt den aktuellen Z-Wert im Fenster-Titel an.
+    /// </summary>
+    private void UpdateWindowTitle()
+    {
+        string mapName = string.IsNullOrWhiteSpace(lastSelectedMapName) ? "Unbekannte Karte" : System.IO.Path.GetFileNameWithoutExtension(lastSelectedMapName);
+
+        this.Title = $"Karte: {mapName} – Z: {posZ}";
+    }
+
     #endregion
 }
